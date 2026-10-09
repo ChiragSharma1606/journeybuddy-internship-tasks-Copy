@@ -67,9 +67,7 @@ For the example query, the expected qualitative ranking is:
 
 Pinecone manages the underlying vector indexing and retrieval infrastructure; the exact internal indexing algorithm depends on the service implementation.
 
-## Official Documentation
 
-https://docs.pinecone.io/
 
 ## 7. Example Vector Record and Query
 
@@ -108,4 +106,7 @@ A Pinecone record can store a unique ID, an embedding vector, and metadata.
 5. Present the matching text to the application.
 
 The results depend on the actual embeddings and stored records; this example does not represent measured search output.
+
+## Official Documentation  
+https://docs.pinecone.io/
 
