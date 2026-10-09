@@ -65,3 +65,47 @@ Consider a user submitting a question to an intelligent assistant.
 ## 7. Reference Documentation
 
 https://adk.dev/
+
+## 8. Example Client Request Lifecycle
+
+The following pseudocode demonstrates the client-side flow when a user submits a question to the assistant.
+
+```javascript
+async function sendQuestion(question) {
+  setLoading(true);
+  setError(null);
+
+  try {
+    const response = await fetch("/api/assistant", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ question })
+    });
+
+    if (!response.ok) {
+      throw new Error("Request failed");
+    }
+
+    const data = await response.json();
+    setAnswer(data.answer);
+  } catch (error) {
+    setError("Unable to get a response. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+}
+```
+
+**Note:** This is conceptual client-side pseudocode. Functions such as `setLoading`, `setError`, and `setAnswer` represent application state updates and must be implemented in the actual UI framework.
+
+### Expected UI States
+
+| State | UI behavior |
+|---|---|
+| Loading | Show a progress indicator |
+| Success | Display the assistant's answer |
+| Error | Display an error message and allow retry |
+| Complete | Stop the loading indicator |
+
