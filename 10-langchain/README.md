@@ -84,3 +84,46 @@ Question:
 ## 8. Reference Documentation
 
 https://python.langchain.com/docs/
+
+## 9. Conceptual Retrieval Pipeline Example
+
+The following pseudocode illustrates how the pipeline connects retrieval, prompt construction, model invocation, and output parsing.
+
+```python
+def answer_question(question):
+    # 1. Retrieve relevant documents
+    documents = retriever.invoke(question)
+
+    if not documents:
+        return "I could not find relevant information."
+
+    # 2. Build context from retrieved documents
+    context = "\n".join(
+        document.page_content for document in documents
+    )
+
+    # 3. Build the prompt
+    prompt = prompt_template.invoke({
+        "question": question,
+        "context": context
+    })
+
+    # 4. Invoke the language model
+    response = language_model.invoke(prompt)
+
+    # 5. Parse and return the output
+    return output_parser.invoke(response)
+```
+
+**Note:** This is conceptual pseudocode, not a tested, standalone LangChain implementation. The retriever, prompt template, language model, and output parser must be configured for the actual application.
+
+### Expected Behavior
+
+| Stage | Result |
+|---|---|
+| Retrieval | Relevant documents are collected |
+| Context construction | Document text is combined |
+| Prompt creation | Question and context are inserted |
+| Model invocation | A response is generated |
+| Output parsing | The result is returned in the required format |
+
