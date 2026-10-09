@@ -50,9 +50,10 @@ FastAPI uses request validation to reject malformed inputs before the endpoint l
 
 - Validate all untrusted inputs.
 - Use clear and consistent response schemas.
+- Avoid exposing internal stack traces to clients.
+- Document request and response models.
 
- ## Request and Response Schema Examples
-
+## Request and Response Schema Examples
 ### Request Parameters
 
 Example endpoint:
