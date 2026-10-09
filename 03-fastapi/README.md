@@ -50,6 +50,59 @@ FastAPI uses request validation to reject malformed inputs before the endpoint l
 
 - Validate all untrusted inputs.
 - Use clear and consistent response schemas.
+
+- ## Request and Response Schema Examples
+
+### Request Parameters
+
+Example endpoint:
+
+`GET /entities/12?category=technology&limit=10`
+
+| Parameter | Type | Rule |
+|---|---|---|
+| `entity_id` | Integer | Must be greater than zero |
+| `category` | String | Must be an allowed category |
+| `limit` | Integer | Must be between 1 and 100 |
+
+### Example Successful Response
+
+```json
+{
+  "id": 12,
+  "name": "Example Entity",
+  "category": "technology"
+}
+```
+
+### Example Validation Error
+
+If `entity_id` is invalid or `limit` is outside the permitted range, FastAPI normally returns HTTP `422 Unprocessable Entity` for request validation failures.
+
+Example error response:
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["query", "limit"],
+      "msg": "Input should be less than or equal to 100",
+      "type": "less_than_equal"
+    }
+  ]
+}
+```
+
+The exact error details depend on the invalid field and the FastAPI/Pydantic version.
+
+### Validation Flow
+
+1. Receive the request.
+2. Validate path and query parameters against the schema.
+3. If validation fails, return a structured JSON error.
+4. If validation succeeds, execute the endpoint logic.
+5. Validate and serialize the successful response.
+
 - Avoid exposing internal stack traces to clients.
 - Document request and response models.
 
