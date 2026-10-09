@@ -53,6 +53,8 @@ The vector dimensions must match the embedding model used to generate the vector
 ## Benefits
 
 - Combines semantic similarity with metadata filtering.
+- Stores operational data and embeddings together.
+-  Supports retrieval for retrieval-augmented generation (RAG) systems.
 
 ## Example Vector Search Index Configuration
 
