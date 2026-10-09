@@ -72,6 +72,29 @@ CMD ["node", "dist/index.js"]
 - Avoid copying development credentials into the image.
 - Use only the ports required by the application.
 
+## 5. Example `.dockerignore` File
+
+A `.dockerignore` file excludes unnecessary files from the Docker build context.
+
+```text
+node_modules
+.git
+.env
+.env.*
+npm-debug.log*
+coverage
+```
+
+### Benefits
+
+- Reduces the size of the Docker build context.
+- Prevents local dependencies from being copied into the build.
+- Helps keep environment files and local secrets out of the build context.
+- Speeds up builds by excluding unnecessary files.
+
+**Security note:** Do not copy secrets into the image. Use a secrets manager or appropriate runtime configuration for sensitive values.
+
+
 ## Official Documentation
 
 https://docs.docker.com/
