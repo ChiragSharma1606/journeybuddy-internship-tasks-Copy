@@ -71,9 +71,6 @@ TTL user:123
 
 `EX 300` sets the key to expire after 300 seconds.
 
-## Official Documentation
-
-https://redis.io/docs/
 
 ## 7. Example Cache-Aside Pseudocode
 
@@ -113,3 +110,6 @@ async function getUser(userId) {
 | User not found | Return `null` |
 | Successful database lookup | Cache the user for 300 seconds |
 
+## Official Documentation
+
+https://redis.io/docs/
