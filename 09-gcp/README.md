@@ -59,6 +59,34 @@ Google Cloud Run can host containerized application services, while Google Cloud
 
 The application authenticates users, checks authorization, and only then permits access to private resources.
 
+## 6. Example IAM Access Policy
+
+The following is a conceptual permission plan, not a deployable IAM policy.
+
+| Principal | Resource | Access |
+|---|---|---|
+| Public visitor | Public assets bucket | Read objects only if public access is intentionally enabled |
+| Authenticated application user | Private files bucket | Access only to files authorized by the application |
+| Application service account | Public assets bucket | Only the permissions required by the application |
+| Application service account | Private files bucket | Minimum required read/write permissions |
+| Cloud administrator | Both buckets | Administrative access according to organizational policy |
+
+### Access Control Workflow
+
+1. Authenticate the user.
+2. Check whether the user is authorized to access the requested file.
+3. Allow access only when the authorization check succeeds.
+4. Deny unauthorized requests.
+5. Record relevant access events for auditing.
+
+### Security Notes
+
+- Do not grant public access to the private files bucket.
+- Use least-privilege IAM roles.
+- For temporary private-file access, consider short-lived signed URLs.
+- Review bucket permissions regularly.
+
+
 ## Official Documentation
 
 https://cloud.google.com/docs
