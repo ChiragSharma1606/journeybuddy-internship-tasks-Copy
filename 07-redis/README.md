@@ -74,3 +74,42 @@ TTL user:123
 ## Official Documentation
 
 https://redis.io/docs/
+
+## 7. Example Cache-Aside Pseudocode
+
+```javascript
+async function getUser(userId) {
+  const key = `user:${userId}`;
+
+  // 1. Check Redis
+  const cachedUser = await redis.get(key);
+
+  if (cachedUser) {
+    return JSON.parse(cachedUser); // Cache hit
+  }
+
+  // 2. Cache miss: fetch from database
+  const user = await database.getUserById(userId);
+
+  if (!user) {
+    return null;
+  }
+
+  // 3. Store the result with a 300-second TTL
+  await redis.set(key, JSON.stringify(user), "EX", 300);
+
+  return user;
+}
+```
+
+**Conceptual example:** This illustrates the cache-aside pattern. The Redis client and database functions depend on the application's actual implementation.
+
+### Expected Behavior
+
+| Scenario | Application action |
+|---|---|
+| Cache hit | Return the cached user |
+| Cache miss | Fetch the user from the database |
+| User not found | Return `null` |
+| Successful database lookup | Cache the user for 300 seconds |
+
