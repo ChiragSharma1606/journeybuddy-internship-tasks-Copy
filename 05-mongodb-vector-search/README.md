@@ -53,6 +53,38 @@ The vector dimensions must match the embedding model used to generate the vector
 ## Benefits
 
 - Combines semantic similarity with metadata filtering.
+
+## Example Vector Search Index Configuration
+
+The following JSON defines a vector index for the `embedding` field. The example uses 4 dimensions to match the illustrative embedding in the sample document. A real project must use the dimension supported by its chosen embedding model.
+
+```json
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "embedding",
+      "numDimensions": 4,
+      "similarity": "cosine"
+    },
+    {
+      "type": "filter",
+      "path": "category"
+    }
+  ]
+}
+```
+
+**Important:** This is an illustrative configuration. Before deployment, configure the vector dimensions to match the actual embedding model and use the supported settings for the selected Atlas Vector Search version.
+
+## Example Query Workflow
+
+1. Convert the user's query into an embedding using the same embedding model.
+2. Search the `knowledge_chunks` collection using the `knowledge_vector_index`.
+3. Apply a category filter when required.
+4. Rank matching chunks by vector similarity.
+5. Return the most relevant text chunks to the application.
+
 - Stores operational data and embeddings together.
 - Supports retrieval for retrieval-augmented generation (RAG) systems.
 
