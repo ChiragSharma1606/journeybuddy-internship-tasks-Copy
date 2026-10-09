@@ -87,8 +87,7 @@ The following JSON defines a vector index for the `embedding` field. The example
 4. Rank matching chunks by vector similarity.
 5. Return the most relevant text chunks to the application.
 
-- Stores operational data and embeddings together.
-- Supports retrieval for retrieval-augmented generation (RAG) systems.
+
 
 ## Official Documentation
 
