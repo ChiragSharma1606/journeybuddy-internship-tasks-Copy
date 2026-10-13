@@ -1,112 +1,91 @@
-# FastAPI Schema Validation
+# M3: FastAPI Schema Validation
 
 ## Objective
-Define strict validation rules for an API endpoint and document its error-handling flow.
+Design a FastAPI endpoint that validates incoming request data, handles invalid inputs, and returns structured JSON responses.
 
-## Example Endpoint
+## 1. Endpoint Design
 
-`GET /entities/{entity_id}?category=technology`
+**Endpoint:** `GET /entities/{entity_id}`
 
-## Validation Rules
+**Query parameters:**
+- `category`: Category of the entity.
+- `limit`: Maximum number of records to return (1–100).
 
-| Parameter | Type | Validation |
+**Path parameter:**
+- `entity_id`: A positive integer identifying the entity.
+
+## 2. Validation Rules
+
+| Parameter | Validation Rule | Error Response |
 |---|---|---|
-| entity_id | Integer | Must be a positive integer |
-| category | String | Must be an allowed category |
-| limit | Integer | Must be between 1 and 100 |
+| `entity_id` | Must be a positive integer | HTTP 422 |
+| `category` | Must belong to the allowed categories | HTTP 422 |
+| `limit` | Must be between 1 and 100 | HTTP 422 |
 
-## Request Flow
+FastAPI uses Pydantic models and type annotations to validate request data automatically.
 
-```text id="j52jca"
-Client Request
-      |
-      v
-FastAPI Endpoint
-      |
-      v
-Validate Path and Query Parameters
-      |
-      +---- Invalid ----> HTTP 422 Validation Error
-      |
-      v
-Execute Endpoint Logic
-      |
-      v
-Serialize Response as JSON
-      |
-      v
-Return HTTP Response
-```
+## 3. Validation Flow
 
-## Error Handling
+1. Receive the incoming HTTP request.
+2. Extract path and query parameters.
+3. Validate parameter types and constraints.
+4. Return a structured validation error if the input is invalid.
+5. Process the request if validation succeeds.
+6. Return the response in JSON format.
 
-FastAPI uses request validation to reject malformed inputs before the endpoint logic executes. Validation errors are returned in a structured JSON response with details about the invalid fields.
-
-- **422 Unprocessable Entity:** Invalid request parameters or data.
-- **404 Not Found:** The requested entity does not exist.
-- **500 Internal Server Error:** An unexpected server-side failure.
-
-## Security and Reliability
-
-- Validate all untrusted inputs.
-- Use clear and consistent response schemas.
-- Avoid exposing internal stack traces to clients.
-- Document request and response models.
-
-## Request and Response Schema Examples
-### Request Parameters
-
-Example endpoint:
-
-`GET /entities/12?category=technology&limit=10`
-
-| Parameter | Type | Rule |
-|---|---|---|
-| `entity_id` | Integer | Must be greater than zero |
-| `category` | String | Must be an allowed category |
-| `limit` | Integer | Must be between 1 and 100 |
-
-### Example Successful Response
+## 4. Example Successful Response
 
 ```json
 {
-  "id": 12,
-  "name": "Example Entity",
-  "category": "technology"
+  "entity_id": 101,
+  "category": "technology",
+  "status": "success",
+  "message": "Entity retrieved successfully"
 }
 ```
 
-### Example Validation Error
+## 5. Example Validation Error
 
-If `entity_id` is invalid or `limit` is outside the permitted range, FastAPI normally returns HTTP `422 Unprocessable Entity` for request validation failures.
-
-Example error response:
+For an invalid `entity_id`, FastAPI returns HTTP 422 Unprocessable Entity.
 
 ```json
 {
   "detail": [
     {
-      "loc": ["query", "limit"],
-      "msg": "Input should be less than or equal to 100",
-      "type": "less_than_equal"
+      "loc": ["path", "entity_id"],
+      "msg": "Input should be a valid integer",
+      "type": "int_parsing"
     }
   ]
 }
 ```
 
-The exact error details depend on the invalid field and the FastAPI/Pydantic version.
+The exact error message may vary depending on the invalid input and FastAPI/Pydantic version.
 
-### Validation Flow
+## 6. Error Handling
 
-1. Receive the request.
-2. Validate path and query parameters against the schema.
-3. If validation fails, return a structured JSON error.
-4. If validation succeeds, execute the endpoint logic.
-5. Validate and serialize the successful response.
+- **422 Unprocessable Entity:** Request parameters fail validation.
+- **404 Not Found:** The requested entity does not exist.
+- **500 Internal Server Error:** An unexpected server-side error occurs.
 
-- Avoid exposing internal stack traces to clients.
-- Document request and response models.
+Error responses should provide useful information without exposing internal stack traces or sensitive implementation details.
 
-## Official Documentation
+## 7. Security and Best Practices
 
-https://fastapi.tiangolo.com/
+- Validate all incoming request parameters.
+- Use type annotations and Pydantic validation.
+- Define clear request and response schemas.
+- Return appropriate HTTP status codes.
+- Keep sensitive information out of error responses.
+- Document endpoint behavior and validation rules.
+
+## 8. Technical References
+
+- FastAPI Documentation: https://fastapi.tiangolo.com/
+- Request Parameters: https://fastapi.tiangolo.com/tutorial/query-params/
+- Path Parameters: https://fastapi.tiangolo.com/tutorial/path-params/
+- Pydantic Documentation: https://docs.pydantic.dev/latest/
+
+## Conclusion
+
+FastAPI provides automatic request validation, structured error responses, and type-based data handling. These features help build reliable and maintainable API endpoints.
