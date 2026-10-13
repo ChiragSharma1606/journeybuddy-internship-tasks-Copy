@@ -1,111 +1,95 @@
-# Google ADK — Client-Server Interaction Lifecycle
+# M11: Google Agent Development Kit (ADK)
 
-## 1. Objective
-Design the interaction lifecycle between a client application and a backend server, including UI events, asynchronous network requests, state updates, and UI rendering.
+## Objective
+Describe the client-server lifecycle of an AI agent application using the Google Agent Development Kit (ADK), including request handling, agent execution, tool interactions, and response delivery.
 
-## 2. Architecture
+## 1. Architecture Overview
+
+The client sends a user message to the backend. The backend uses the ADK Runner to execute the configured agent, manages the session, and returns the agent's response to the client.
+
+**Main components:**
+- **Client:** Accepts user input and displays the response.
+- **Backend server:** Receives requests and coordinates agent execution.
+- **ADK Runner:** Runs the agent within a session.
+- **Agent:** Processes the user's request and decides whether tools are needed.
+- **Tools:** Perform supported actions or retrieve information.
+- **Session service:** Maintains conversation state.
+
+## 2. Client-Server Lifecycle
+
+1. **User input:** The client collects a message from the user.
+2. **Request transmission:** The client sends the message to the backend over HTTP or another supported transport.
+3. **Request validation:** The backend validates the request and identifies the user and conversation session.
+4. **Session management:** The backend creates or retrieves the appropriate ADK session.
+5. **Agent execution:** The ADK Runner invokes the configured agent with the user's message.
+6. **Tool interaction:** If necessary, the agent requests a tool call. The tool executes and returns its result to the agent.
+7. **Response generation:** The agent processes the tool result and produces a response.
+8. **Response delivery:** The backend sends the result or supported event stream to the client.
+9. **UI update:** The client displays the response and updates its loading or error state.
+
+## 3. Request-Response Flow
 
 ```text
-User Interaction
-       |
-       v
-UI Event Capture
-       |
-       v
-Async Network Request
-       |
-       v
-Backend Processing
-       |
-       v
-Response Received
-       |
-       v
-Application State Update
-       |
-       v
-UI Re-render
+User
+  |
+  v
+Client Application
+  |
+  v
+Backend API
+  |
+  v
+ADK Runner
+  |
+  v
+Agent and Session
+  |
+  +----> Tool Execution (if required)
+  |              |
+  |<-------------+
+  v
+Agent Response
+  |
+  v
+Backend API
+  |
+  v
+Client Displays Result
 ```
 
-## 3. Lifecycle Components
+## 4. Session and State Management
 
-1. **UI Event Capture:** Detect actions such as button clicks or form submissions.
-2. **Async Network Request:** Send the request without blocking the user interface.
-3. **Backend Processing:** Validate the request and perform the required operation.
-4. **Response Handling:** Process the server response or handle an error.
-5. **State Update:** Update the application's data based on the response.
-6. **UI Re-render:** Display the updated information to the user.
-
-## 4. Example Interaction
-
-Consider a user submitting a question to an intelligent assistant.
-
-- The user enters a question and clicks Send.
-- The client captures the event and sends an asynchronous request.
-- The server processes the question and generates a response.
-- The client receives the response and updates its state.
-- The interface displays the answer.
+- A session groups related interactions within a conversation.
+- The backend should associate each session with the correct user.
+- Session services can maintain conversation history and relevant state.
+- Authentication and authorization should be checked before allowing access to a session.
+- Sensitive information should not be exposed in logs or responses.
 
 ## 5. Error Handling
 
-- Display a loading indicator while waiting for the response.
-- Handle network failures and server errors.
-- Prevent accidental duplicate submissions when appropriate.
-- Show a clear error message and allow the user to retry.
-- Handle delayed responses without freezing the UI.
+- **400 Bad Request:** The incoming request is invalid.
+- **401 Unauthorized:** Authentication is missing or invalid.
+- **403 Forbidden:** The user is not allowed to access the requested resource.
+- **500 Internal Server Error:** An unexpected backend or agent execution error occurs.
 
-## 6. Key Design Considerations
+The client should show a useful error message, while the server records appropriate diagnostic details without exposing secrets.
 
-- Keep the user interface responsive.
-- Separate UI state from network-request logic.
-- Validate data on both client and server.
-- Handle asynchronous operations safely.
-- Avoid exposing sensitive information in client-side code.
+## 6. Security and Best Practices
 
-## 7. Reference Documentation
+- Authenticate users before processing protected requests.
+- Validate user input on the server.
+- Apply authorization checks to agent tools and session access.
+- Limit tool permissions to the minimum required.
+- Handle tool failures and timeouts gracefully.
+- Avoid exposing API keys, credentials, and internal stack traces.
+- Log errors without recording unnecessary sensitive user data.
 
-https://adk.dev/
+## 7. Technical References
 
-## 8. Example Client Request Lifecycle
+- Google ADK Documentation: https://google.github.io/adk-docs/
+- Google ADK Python Quickstart: https://google.github.io/adk-docs/get-started/quickstart/
+- Google ADK Sessions: https://google.github.io/adk-docs/sessions/
 
-The following pseudocode demonstrates the client-side flow when a user submits a question to the assistant.
+## Conclusion
 
-```javascript
-async function sendQuestion(question) {
-  setLoading(true);
-  setError(null);
-
-  try {
-    const response = await fetch("/api/assistant", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ question })
-    });
-
-    if (!response.ok) {
-      throw new Error("Request failed");
-    }
-
-    const data = await response.json();
-    setAnswer(data.answer);
-  } catch (error) {
-    setError("Unable to get a response. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-}
-```
-
-**Note:** This is conceptual client-side pseudocode. Functions such as `setLoading`, `setError`, and `setAnswer` represent application state updates and must be implemented in the actual UI framework.
-
-### Expected UI States
-
-| State | UI behavior |
-|---|---|
-| Loading | Show a progress indicator |
-| Success | Display the assistant's answer |
-| Error | Display an error message and allow retry |
-| Complete | Stop the loading indicator |
-
+The Google ADK client-server lifecycle connects user requests with agent execution, session management, optional tool interactions, and response delivery. Proper validation, access control, and error handling help make the application reliable and secure.
